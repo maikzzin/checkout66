@@ -1,0 +1,36 @@
+(function(global) {
+	function run() {
+		var tinyGS = global.tinyGS;
+
+		if (!tinyGS) return;
+
+		//Testar se está na página de finalização.
+		if (LS.order && LS.order.id > 0) {
+
+			//Obtém os scripts
+			var script = tinyGS.getOwnScript("https://tiny-google-snippets.s3-sa-east-1.amazonaws.com/nuvemshop/conversion.js");
+			if (script) {
+				var conversionId = tinyGS.extractUrlValue("conversion_id", script.src);
+				var conversionLabel = tinyGS.extractUrlValue("conversion_label", script.src);
+
+				if (tinyGS.getConversionId() == conversionId) {
+					//Chama o evento de conversão.
+					tinyGS.gtag('event', 'conversion', {
+						'send_to': conversionId + "/" + conversionLabel,
+						'value': (LS.cart.subtotal * 1) / 100,
+						'currency': 'BRL',
+						'transaction_id': LS.order.id
+					});
+				} else {
+					console.error("ConversionId diferentes");
+				}
+			}
+		}
+	}
+
+	if (global.tinyGS) {
+		run();
+	} else {
+		setTimeout(run, 1000);
+	}
+})(window);

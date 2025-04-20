@@ -1,0 +1,95 @@
+(function () {
+    var checkout = null;
+    var trackId = null;
+    var antiFraud = null;
+    var listeners = [];
+    var isInitialized = false;
+    window.antifraudNuvempago = Object.create({}, {
+        init: {
+            value: init,
+            writable: false,
+        },
+        load: {
+            value: load,
+            writable: false,
+        },
+    });
+    function getCheckout(callback) {
+        if (typeof callback === 'function') {
+            callback(checkout);
+        }
+    }
+    function loadDeps(src) {
+        var f = document.createElement('script');
+        f.setAttribute('type', 'text/javascript');
+        f.setAttribute('src', src);
+        f.async = true;
+        document.head.appendChild(f);
+    }
+    function setAntifraud(antiFraudEngine) {
+        antiFraud = antiFraud ? `${antiFraud} ${antiFraudEngine}` : antiFraudEngine;
+    }
+    function getAntifraud() {
+        return antiFraud;
+    }
+    function generateTrackId() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
+    }
+    function getTrackId() {
+        if (!trackId) {
+            trackId = generateTrackId();
+        }
+        return trackId;
+    }
+    const methods = Object.defineProperties({}, {
+        getCheckout: {
+            value: getCheckout,
+            writable: false,
+        },
+        loadDeps: {
+            value: loadDeps,
+            writable: false,
+        },
+        getTrackId: {
+            value: getTrackId,
+            writable: false,
+        },
+        getAntifraud: {
+            value: getAntifraud,
+            writable: false,
+        },
+    });
+    function init(obj) {
+        isInitialized = true;
+        setAntifraud(obj.antiFraud);
+        getTrackId();
+        listeners.forEach((c) => c(methods));
+        return methods;
+    }
+    function load(callback) {
+        if (typeof callback === 'function') {
+            if (isInitialized) {
+                callback(methods);
+            }
+            else {
+                listeners.push(callback);
+            }
+        }
+    }
+    var src = `https://nuvempago.ms.tiendanube.com/antifraud/fingerprint/script.js?accountId=06ab9fc1-b461-45f0-a829-1ec061d33ca8`;
+    loadDeps(src);
+    var loadCtx = setInterval(() => {
+        if (typeof LoadCheckoutPaymentContext === 'function') {
+            window.LoadCheckoutPaymentContext((Checkout) => {
+                if (Checkout) {
+                    checkout = Checkout;
+                }
+                clearInterval(loadCtx);
+            });
+        }
+    }, 500);
+})();
+//# sourceMappingURL=antifraud.js.map

@@ -1,0 +1,19 @@
+(function() {
+  const fingerStyle =
+    "width: 100px; height: 100px; border: 0; position: absolute; top: -5000px;";
+  const fingerSource = "https://h.online-metrix.net/fp/tags.js";
+
+  // org_id: 1snn5n9w for staging
+  var merchantParams = `?org_id=k8vif92e&session_id=braspag_nuvemshop${LS.cart.id}`;
+  var fingerPrint = window.document.createElement("script");
+  fingerPrint.setAttribute("src", `${fingerSource}${merchantParams}`);
+  fingerPrint.setAttribute("type", "text/javascript");
+  document.getElementsByTagName("head")[0].appendChild(fingerPrint);
+
+  var noscript = document.createElement("noscript");
+  var iframe = document.createElement("iframe");
+  iframe.setAttribute("src", `${fingerSource}${merchantParams}`);
+  iframe.setAttribute("style", `${fingerStyle}`);
+  noscript.appendChild(iframe);
+  document.body.appendChild(noscript);
+})();

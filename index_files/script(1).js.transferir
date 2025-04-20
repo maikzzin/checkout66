@@ -1,0 +1,15 @@
+(function (a, b, c) {
+    a['CsdpObject'] = c;
+    (a[c] =
+        a[c] ||
+            function () {
+                (a[c].q = a[c].q || []).push(arguments);
+            }),
+        (a[c].l = 1 * new Date());
+    var deps = [{ src: b }];
+    const npAntifraud = antifraudNuvempago.init({ antiFraud: 'clearsale' });
+    deps.forEach((dep) => npAntifraud.loadDeps(dep.src));
+    csdp('app', 'o1z7n6swx4a33uboetvz');
+    csdp('sessionid', npAntifraud.getTrackId());
+})(window, 'https://device.clearsale.com.br/p/fp.js', 'csdp');
+//# sourceMappingURL=fingerprint.js.map
